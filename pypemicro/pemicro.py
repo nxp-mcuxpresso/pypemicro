@@ -126,8 +126,8 @@ class PyPemicro():
             lib_info["version"] = dll.version()
             lib_info["version_num"] = dll.get_dll_version()
         except FileNotFoundError as exc:
-            raise PEMicroException(f"Cannot load the PEMICRO library({lib_name}) \
-                                        on this path:{dll_path}. Error({str(exc)})")
+            raise PEMicroException(f"Cannot load the PEMICRO library({lib_name})"+
+                                   f"on this path:{dll_path}. Error({str(exc)})")
         return lib_info
 
     @staticmethod
@@ -149,19 +149,19 @@ class PyPemicro():
             try:
                 library_dlls.append(PyPemicro._load_pemicro_lib_info(dllpath, lib_name))
             except PEMicroException as exc:
-                logger.debug(f"{str(exc)}")
+                pass
 
         if search_generic is True:
             # Look in System Folders
             try:
                 library_dlls.append(PyPemicro._load_pemicro_lib_info("", lib_name))
             except PEMicroException as exc:
-                logger.debug(f"{str(exc)}")
+                pass
             # Look in the folder with .py file
             try:
                 library_dlls.append(PyPemicro._load_pemicro_lib_info(os.path.dirname(__file__), lib_name))
             except PEMicroException as exc:
-                logger.debug(f"{str(exc)}")
+                pass
             # Look in a local library storage snapshot
             try:
                 os_utility_path = os.path.join("libs", PyPemicro.get_user_friendly_os_name())
@@ -169,7 +169,10 @@ class PyPemicro():
                                                                                   os_utility_path),
                                                                      lib_name))
             except PEMicroException as exc:
-                logger.debug(f"{str(exc)}")
+                pass
+
+        if len(library_dlls) == 0:
+            logger.debug(f"There is no PEMICRO library.")
 
         return library_dlls
 
@@ -345,6 +348,8 @@ class PyPemicro():
                                    c_char_p(os.path.dirname(os.path.abspath(file_name).encode('utf-8'))),
                                    None) is False:
             raise PEMicroException("The special feature command hasn't accepted")
+
+        logger.debug(f"Opened PEMicro library: {file_name}")
 
         return dll
 
