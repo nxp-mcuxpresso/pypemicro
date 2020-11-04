@@ -42,4 +42,4 @@ setup_args = dict(
         ]
 )
 
-setup(**setup_args, install_requires=install_requires)
+setup(**setup_args)
