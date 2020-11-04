@@ -81,9 +81,12 @@ class PyPemicro():
 
         :return: User Fridly OS name (Windows, Linux, MacOS).
         """
-        systems = {"Windows":"Windows",
-                   ("Linux", "Linux2"):"Linux",
-                   "Darwin":"MacOS"}
+        systems = {
+            "Windows": "Windows",
+            "Linux"  : "Linux",
+            "Linux2" : "Linux",
+            "Darwin" : "MacOS"
+        }
         return systems[platform.system()]
 
     @staticmethod
@@ -93,9 +96,11 @@ class PyPemicro():
         Just help function to get right library name depending on used OS.
         :return: Name of library to use on current running system.
         """
-        libs = {"Windows" :{"32bit":"unitacmp-32.dll", "64bit":"unitacmp-64.dll"},
-                ("Linux") :{("32bit", "64bit")                :"unitacmp-64.so"},
-                ("Darwin"):{("32bit", "64bit")                :"unitacmp-64.dylib"}}
+        libs = {
+            "Windows" : {"32bit": "unitacmp-32.dll",   "64bit": "unitacmp-64.dll"},
+            "Linux"   : {"32bit": "unitacmp-64.so",    "64bit": "unitacmp-64.so"},
+            "Darwin"  : {"32bit": "unitacmp-64.dylib", "64bit": "unitacmp-64.dylib"}
+        }
 
         pointer_size = "64bit" if sys.maxsize > 2**32 else "32bit"
 
