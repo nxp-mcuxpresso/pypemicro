@@ -886,7 +886,7 @@ class PyPemicro():
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
         mem_result = c_ulong()
-        value = self.lib.read_32bit_value(0, address, mem_result)
+        value = self.lib.read_32bit_value(0, address, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
             raise PEMicroException(f"Read 32bit method failed. Result({mem_result.value})")
@@ -905,7 +905,7 @@ class PyPemicro():
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
         mem_result = c_ulong()
-        value = self.lib.write_32bit_value(0, address, data, mem_result)
+        value = self.lib.write_32bit_value(0, address, data, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
             raise PEMicroException(f"Write 32bit method failed. Result({mem_result.value})")
@@ -922,7 +922,7 @@ class PyPemicro():
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
         mem_result = c_ulong()
-        value = self.lib.read_16bit_value(0, address, mem_result)
+        value = self.lib.read_16bit_value(0, address, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
             raise PEMicroException(f"Read 16bit method failed. Result({mem_result.value})")
@@ -941,7 +941,7 @@ class PyPemicro():
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
         mem_result = c_ulong()
-        value = self.lib.write_16bit_value(0, address, data, mem_result)
+        value = self.lib.write_16bit_value(0, address, data, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
             raise PEMicroException(f"Write 16bit method failed. Result({mem_result.value})")
@@ -958,7 +958,7 @@ class PyPemicro():
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
         mem_result = c_ulong()
-        value = self.lib.read_8bit_value(0, address, mem_result)
+        value = self.lib.read_8bit_value(0, address, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
             raise PEMicroException(f"Read 8bit method failed. Result({mem_result.value})")
@@ -977,7 +977,7 @@ class PyPemicro():
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
         mem_result = c_ulong()
-        value = self.lib.write_8bit_value(0, address, data, mem_result)
+        value = self.lib.write_8bit_value(0, address, data, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
             raise PEMicroException(f"Write 8bit method failed. Result({mem_result.value})")
