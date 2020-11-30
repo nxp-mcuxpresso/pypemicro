@@ -130,7 +130,7 @@ class PyPemicro():
 
             lib_info["version"] = dll.version()
             lib_info["version_num"] = dll.get_dll_version()
-        except FileNotFoundError as exc:
+        except (FileNotFoundError, OSError) as exc:
             raise PEMicroException(f"Cannot load the PEMICRO library({lib_name})"+
                                    f"on this path:{dll_path}. Error({str(exc)})")
         return lib_info
@@ -192,8 +192,12 @@ class PyPemicro():
         if file_name is None:
             raise PEMicroException("The libray file name MSUT be specified.")
 
-        # Open the Pemicro library and
-        dll = cdll.LoadLibrary(file_name)
+        try:
+            # Open the Pemicro library and
+            dll = cdll.LoadLibrary(file_name)
+        except (FileNotFoundError, OSError) as exc:
+            raise PEMicroException(f"Cannot load the PEMICRO library({file_name}). "+
+                                   f"Error({str(exc)})")
 
         if dll is None:
             raise PEMicroException("The PEMicro library load failed.")
