@@ -1112,20 +1112,21 @@ class PyPemicro():
             raise PEMicroException("Library is not loaded")
         swd_status = self.last_swd_status()
 
-        if swd_status not in [PEMicroSpecialFeaturesSwdStatus.PE_ARM_SWD_STATUS_ACK,
-                              PEMicroSpecialFeaturesSwdStatus.PE_ARM_SWD_STATUS_WAIT]:
-            # Verify that the connection to the P&E hardware interface is good.
-            probe_error = self.lib.check_critical_error()
+        if swd_status is not int(PEMicroSpecialFeaturesSwdStatus.PE_ARM_SWD_STATUS_ACK):
+            if swd_status is not int(PEMicroSpecialFeaturesSwdStatus.PE_ARM_SWD_STATUS_WAIT):
+                # Verify that the connection to the P&E hardware interface is good.
+                probe_error = self.lib.check_critical_error()
 
-            if probe_error & 0x08:
-                # Connect and initialize the P&E hardware interface. This does not attempt to reset the target.
-                self.lib.reset_hardware_interface()
+                if probe_error & 0x08:
+                    # Connect and initialize the P&E hardware interface. This does not attempt to reset the target.
+                    self.lib.reset_hardware_interface()
 
-            self.reset_target()
-            self.halt_target()
+                self.reset_target()
+                self.halt_target()
 
-            self._log_warning(f"SWD Status failed during IO operation. status: 0x{swd_status:02X},"
-                              f"the communication has been resumed by reset target sequence.")
+                self._log_warning(f"SWD Status failed during IO operation. status: 0x{swd_status:02X},"
+                                f"the communication has been resumed by reset target sequence.")                                
+
             raise PEMicroTransferException(f"SWD Status failed during IO operation. status: 0x{swd_status:02X}")
 
     def write_ap_register(self, apselect: int, addr: int, value: int, now: bool = False) -> None:

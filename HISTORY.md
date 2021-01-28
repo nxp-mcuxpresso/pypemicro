@@ -1,10 +1,16 @@
 History of PyPEMicro package versions
 =====================================
 
+
+v 0.1.4
+-------
+ - January 2021
+ - Fixed behavior of "neverending" WAIT acknowledges on SWD. Now the package raised exception in this case.
+
 v 0.1.3
 -------
  - November 2020
- - Fixed lopening the debug probes libraries under Linux and MacOS
+ - Fixed opening the debug probes libraries under Linux and MacOS
 
 v 0.1.2
 -------

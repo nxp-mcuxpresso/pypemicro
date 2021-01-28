@@ -8,7 +8,7 @@ with open('HISTORY.md') as history_file:
 
 setup_args = dict(
     name='pypemicro',
-    version='0.1.3',
+    version='0.1.4',
     description='Python tool to control PEMicro Debug probes',
     long_description_content_type="text/markdown",
     long_description=README + '\n\n' + HISTORY,
@@ -29,6 +29,7 @@ setup_args = dict(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Operating System :: POSIX :: Linux',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: MacOS :: MacOS X',
