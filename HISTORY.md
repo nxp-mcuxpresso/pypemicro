@@ -1,6 +1,11 @@
 History of PyPEMicro package versions
 =====================================
 
+v 0.1.3
+-------
+ - November 2020
+ - Fixed lopening the debug probes libraries under Linux and MacOS
+
 v 0.1.2
 -------
  - November 2020
