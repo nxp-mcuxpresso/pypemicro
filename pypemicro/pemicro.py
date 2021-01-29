@@ -1121,8 +1121,11 @@ class PyPemicro():
                     # Connect and initialize the P&E hardware interface. This does not attempt to reset the target.
                     self.lib.reset_hardware_interface()
 
-                self.reset_target()
-                self.halt_target()
+                try:
+                    self.reset_target()
+                except:
+                    self._log_debug("Cannot reset target properly, resume normal state of reset pin.")
+                    self.control_reset_line(assert_reset=False)
 
                 self._log_warning(f"SWD Status failed during IO operation. status: 0x{swd_status:02X},"
                                 f"the communication has been resumed by reset target sequence.")                                

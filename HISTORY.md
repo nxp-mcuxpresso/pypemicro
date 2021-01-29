@@ -2,6 +2,11 @@ History of PyPEMicro package versions
 =====================================
 
 
+v 0.1.5
+-------
+ - January 2021
+ - Fixed behavior of reset sequention during SWD fault resume.
+
 v 0.1.4
 -------
  - January 2021
