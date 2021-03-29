@@ -57,15 +57,6 @@ from .pemicro_const import (PEMicroPortType,
 
 class PEMicroException(Exception):
     """The base PEMicro implementation exception."""
-    def __init__(self, code: str):
-        """Initialization of base PEMicro Exception.
-
-        :param code: String exception message
-        """
-        self.message = f"PEMicro Exception with error code:{code}"
-
-        super(PEMicroException, self).__init__(self.message)
-
 
 class PEMicroTransferException(PEMicroException):
     """PEMicro Transfer exception."""
@@ -79,7 +70,7 @@ class PyPemicro():
     def get_user_friendly_os_name() -> str:
         """Get user friendly os name.
 
-        :return: User Fridly OS name (Windows, Linux, MacOS).
+        :return: User friendly OS name (Windows, Linux, MacOS).
         """
         systems = {
             "Windows": "Windows",
@@ -103,8 +94,11 @@ class PyPemicro():
         }
 
         pointer_size = "64bit" if sys.maxsize > 2**32 else "32bit"
-
-        return libs[platform.system()][pointer_size]    # type: ignore
+        system_name = platform.system()
+        if system_name not in libs.keys():
+            raise PEMicroException(f"Unable to determinate running operation system ({system_name})")
+        
+        return libs[system_name][pointer_size]    # type: ignore
 
     @staticmethod
     def _load_pemicro_lib_info(dll_path: str, lib_name: str) -> dict:
@@ -137,18 +131,16 @@ class PyPemicro():
 
     @staticmethod
     def get_pemicro_lib_list(dllpath: str = None, search_generic: bool = True) -> list:
-        """Gets the description list of PEMicro DLL's.
+        """Gets the description list of PEMicro DLLs.
 
         :param dllpath: User way to add specific a DLL path.
         :param search_generic: If it's True, the engine search also in general places in system.
-        :return: The List of serch results.
+        :return: The List of search results.
         :raises PEMicroException: Various kind of issues
         """
         # Get the name of PEMicro dynamic library
         lib_name = PyPemicro.get_library_name()
-        if lib_name is None:
-            raise PEMicroException("Unable to determinate running operation system")
-
+            
         library_dlls = list()
         if dllpath is not None:
             try:
@@ -186,11 +178,11 @@ class PyPemicro():
         """Open PEMicro library with specified full path.
 
         :param file_name: File Name of PEMicro dynamic library.
-        :return: Fill up infomrmation about libraray and library itself
+        :return: Fill up information about libraray and library itself
         :raises PEMicroException: Cannot load the library
         """
         if file_name is None:
-            raise PEMicroException("The libray file name MSUT be specified.")
+            raise PEMicroException("The libray file name MUST be specified.")
 
         try:
             # Open the Pemicro library and
@@ -428,9 +420,9 @@ class PyPemicro():
         except PEMicroException as exc:
             raise PEMicroException(str(exc))
 
-        numports = lib.get_enumerated_number_of_ports(PEMicroPortType.AUTODETECT)
+        num_ports = lib.get_enumerated_number_of_ports(PEMicroPortType.AUTODETECT)
         ports = list()
-        for i in range(numports):
+        for i in range(num_ports):
             ports.append({"id":lib.get_port_descriptor_short(PEMicroPortType.AUTODETECT, i+1).decode("utf-8"),
                           "description":lib.get_port_descriptor(PEMicroPortType.AUTODETECT, i+1).decode("utf-8")})
         return ports
@@ -452,17 +444,17 @@ class PyPemicro():
     def list_ports_name() -> None:
         """List to logger (info level) the all connected PEMicro probe names.
 
-        :raises PEMicroException: Ussually that the port is not opened.
+        :raises PEMicroException: Usually that the port is not opened.
         """
         try:
             lib = PyPemicro.get_pemicro_lib()
         except PEMicroException as exc:
             raise PEMicroException(str(exc))
 
-        numports = lib.get_enumerated_number_of_ports(PEMicroPortType.AUTODETECT)
-        if numports == 0:
+        num_ports = lib.get_enumerated_number_of_ports(PEMicroPortType.AUTODETECT)
+        if num_ports == 0:
             logger.info("No hardware detected locally.")
-        for i in range(numports):
+        for i in range(num_ports):
             logger.info(lib.get_port_descriptor_short(PEMicroPortType.AUTODETECT, i+1).decode("utf-8"))
 
     def __init__(self,
@@ -474,7 +466,7 @@ class PyPemicro():
                  ) -> None:
         """Class initialization.
 
-        :param dllpath: The way to force the own path for PEMicro DLL's.
+        :param dllpath: The way to force the own path for PEMicro DLLs.
         :param log_info: Log function - info level.
         :param log_war: Log function - warning level.
         :param log_err: Log function - error level.
@@ -532,7 +524,7 @@ class PyPemicro():
             raise PEMicroException("Library is not loaded")
 
         if self.lib.reenumerate_all_port_types() is not True:
-            raise PEMicroException("Reenumeration of PE interfaces failed.")
+            raise PEMicroException("Re-enumeration of PE interfaces failed.")
 
     def open(self, debug_hardware_name_ip_or_serialnum: str) -> None:
         """This function opens the connection to PEMicro debug probe.
@@ -597,9 +589,9 @@ class PyPemicro():
 
     def __del__(self) -> None:
         """Action for deleting the class instance."""
-        # Cloase the possibly opened connection
+        # Close the possibly opened connection
         self.close()
-        # Unload the library if neccessary
+        # Unload the library if necessary
         if self.lib is not None:
             del self.lib
 
@@ -785,7 +777,7 @@ class PyPemicro():
     def get_device_list(self, search_string: str = None) -> list:
         """Get the device list.
 
-        :param search_string: The partipial string to filter results.
+        :param search_string: The participial string to filter results.
         :raises PEMicroException: Check to opened connection.
         :return: List of all devices
         """
@@ -800,7 +792,7 @@ class PyPemicro():
                                    ref1=ret_val,
                                    ref2=None if search_string is None else search_string.encode('utf-8'))
         except PEMicroException:
-            raise PEMicroException("It is unpossible to retrive PEMicro device list")
+            raise PEMicroException("It is impossible to retrive PEMicro device list")
 
         return ret_val.value.decode().split(',')
 
