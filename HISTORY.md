@@ -1,6 +1,11 @@
 History of PyPEMicro package versions
 =====================================
 
+v 0.1.6
+-------
+ - March 2021
+ - Fixed behavior with exception on ussuported OS and some typos.
+ - Removed rest comment in PyPemicro exception.
 
 v 0.1.5
 -------
