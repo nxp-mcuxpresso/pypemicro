@@ -76,7 +76,10 @@ class PyPemicro():
             "Windows": "Windows",
             "Linux"  : "Linux",
             "Linux2" : "Linux",
-            "Darwin" : "MacOS"
+            "Darwin" : "MacOS",
+            "FreeBSD": "FreeBSD",
+            "OpenBSD": "OpenBSD",
+            "NetBSD" : "NetBSD",
         }
         return systems[platform.system()]
 
@@ -90,7 +93,10 @@ class PyPemicro():
         libs = {
             "Windows" : {"32bit": "unitacmp-32.dll",   "64bit": "unitacmp-64.dll"},
             "Linux"   : {"32bit": "unitacmp-64.so",    "64bit": "unitacmp-64.so"},
-            "Darwin"  : {"32bit": "unitacmp-64.dylib", "64bit": "unitacmp-64.dylib"}
+            "Darwin"  : {"32bit": "unitacmp-64.dylib", "64bit": "unitacmp-64.dylib"},
+            "FreeBSD" : {"32bit": "unitacmp-64.so",    "64bit": "unitacmp-64.so"},
+            "OpenSD"  : {"32bit": "unitacmp-64.so",    "64bit": "unitacmp-64.so"},
+            "NetBSD"  : {"32bit": "unitacmp-64.so",    "64bit": "unitacmp-64.so"},
         }
 
         pointer_size = "64bit" if sys.maxsize > 2**32 else "32bit"
