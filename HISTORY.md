@@ -1,6 +1,11 @@
 History of PyPEMicro package versions
 =====================================
 
+v 0.1.7
+-------
+ - August 2021
+ - Add support for /BSD: FreeBSD, OpenBSD, NetBSD. Thanks to: Tomasz 'CeDeROM' CEDRO <tomek@cedro.info>.
+
 v 0.1.6
 -------
  - March 2021
