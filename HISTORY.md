@@ -1,6 +1,11 @@
 History of PyPEMicro package versions
 =====================================
 
+v 0.1.8
+-------
+ - January 2022
+ - Tune app behavior of PyPemicro constructor.
+
 v 0.1.7
 -------
  - August 2021

@@ -40,7 +40,6 @@
 
 The basics of the code is comming from original PEMicro version.
 """
-from typing import Any
 from enum import IntEnum
 
 #Types are provided via *.PYI interface files
@@ -111,13 +110,13 @@ class PEMicroMemoryAccessResults(IntEnum):
 
 
 class PEMicroMemoryAccessSize(IntEnum):
-    """Memory access size used for block memmory operations."""
+    """Memory access size used for block memory operations."""
     PE_MEM_ACCESS_8BIT = 1
     PE_MEM_ACCESS_16BIT = 2
     PE_MEM_ACCESS_32BIT = 4
 
 class PEMicroArmRegisters(IntEnum):
-    """List of Arm registers used for Writing/Readin operations."""
+    """List of Arm registers used for Writing/Reading operations."""
     # Core registers
     PE_ARM_REG_R0 = 0
     PE_ARM_REG_R1 = 1
@@ -197,7 +196,7 @@ class PEMicroInterfaces(IntEnum):
     SWD = 1
 
     @classmethod
-    def get_str(cls, interface: Any) -> str:
+    def get_str(cls, interface: "PEMicroInterfaces") -> str:
         """Gets the string version of PEMicro Interface.
 
         :param interface: The Interface in numeric format

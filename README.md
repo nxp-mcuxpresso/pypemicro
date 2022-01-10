@@ -8,7 +8,7 @@ The package is tested only with Multilink/FX and Cyclone/FX probes on NXP ARM mi
 
 The PEMicro company helps with this development, so big Thanks to them (www.pemicro.com).
 
-Author: Petr Gargulak (NXP 2020-2021, www.nxp.com)
+Author: Petr Gargulak (NXP 2020-2022, www.nxp.com)
 
 Dependencies
 ------------
