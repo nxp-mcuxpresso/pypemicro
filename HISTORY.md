@@ -1,6 +1,11 @@
 History of PyPEMicro package versions
 =====================================
 
+v 0.1.9
+-------
+ - January 2022
+ - Just fix bug with self.lib member in case of not loaded PEMicro drivers.
+
 v 0.1.8
 -------
  - January 2022
