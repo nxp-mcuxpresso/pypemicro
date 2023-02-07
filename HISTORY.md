@@ -1,6 +1,13 @@
 History of PyPEMicro package versions
 =====================================
 
+v 0.1.10
+-------
+ - February 2023
+ - Fixed issue when the PyPemicro causes crash of powershell in Windows
+ - Reformatted whole code
+ - Simplified checking of reopened driver.
+
 v 0.1.9
 -------
  - January 2022

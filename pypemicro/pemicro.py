@@ -4,7 +4,7 @@
 # All rights reserved.
 # Visit us at www.pemicro.com
 #
-# Copyright 2020 NXP
+# Copyright 2020-2023 NXP
 #
 # SPDX-License-Identifier:
 # BSD-3-Clause
@@ -44,10 +44,9 @@ import logging
 import os.path
 import platform
 import sys
-from typing import Any
+from typing import Any, Dict, List
 from ctypes import (
     CDLL,
-    cdll,
     c_bool,
     c_ulong,
     c_ushort,
@@ -114,7 +113,7 @@ class PyPemicro:
             "NetBSD": {"32bit": "unitacmp-64.so", "64bit": "unitacmp-64.so"},
         }
 
-        pointer_size = "64bit" if sys.maxsize > 2 ** 32 else "32bit"
+        pointer_size = "64bit" if sys.maxsize > 2**32 else "32bit"
         system_name = platform.system()
         if system_name not in libs.keys():
             raise PEMicroException(
@@ -124,7 +123,7 @@ class PyPemicro:
         return libs[system_name][pointer_size]  # type: ignore
 
     @staticmethod
-    def _load_pemicro_lib_info(dll_path: str, lib_name: str) -> dict:
+    def _load_pemicro_lib_info(dll_path: str, lib_name: str) -> Dict:
         """Get the PEMicro library info.
 
         Help function to try load and fill up information
@@ -138,7 +137,7 @@ class PyPemicro:
             lib_info = {}
             lib_info["path"] = dll_path
             lib_info["name"] = lib_name
-            dll = cdll.LoadLibrary(os.path.join(dll_path, lib_name))
+            dll = CDLL(os.path.join(dll_path, lib_name))
 
             # char * version(void);
             dll.version.restype = c_char_p
@@ -147,6 +146,7 @@ class PyPemicro:
 
             lib_info["version"] = dll.version()
             lib_info["version_num"] = dll.get_dll_version()
+            del dll
         except (FileNotFoundError, OSError) as exc:
             raise PEMicroException(
                 f"Cannot load the PEMICRO library({lib_name})"
@@ -155,7 +155,7 @@ class PyPemicro:
         return lib_info
 
     @staticmethod
-    def get_pemicro_lib_list(dll_path: str = None, search_generic: bool = True) -> list:
+    def get_pemicro_lib_list(dll_path: str = None, search_generic: bool = True) -> List:
         """Gets the description list of PEMicro DLLs.
 
         :param dll_path: User way to add specific a DLL path.
@@ -166,16 +166,14 @@ class PyPemicro:
         # Get the name of PEMicro dynamic library
         lib_name = PyPemicro.get_library_name()
 
-        library_dlls = list()
+        library_dlls = []
         if dll_path is not None:
             try:
-                library_dlls.append(
-                    PyPemicro._load_pemicro_lib_info(dll_path, lib_name)
-                )
+                library_dlls.append(PyPemicro._load_pemicro_lib_info(dll_path, lib_name))
             except PEMicroException:
                 pass
 
-        if search_generic is True:
+        if search_generic:
             # Look in System Folders
             try:
                 library_dlls.append(PyPemicro._load_pemicro_lib_info("", lib_name))
@@ -184,17 +182,13 @@ class PyPemicro:
             # Look in the folder with .py file
             try:
                 library_dlls.append(
-                    PyPemicro._load_pemicro_lib_info(
-                        os.path.dirname(__file__), lib_name
-                    )
+                    PyPemicro._load_pemicro_lib_info(os.path.dirname(__file__), lib_name)
                 )
             except PEMicroException:
                 pass
             # Look in a local library storage snapshot
             try:
-                os_utility_path = os.path.join(
-                    "libs", PyPemicro.get_user_friendly_os_name()
-                )
+                os_utility_path = os.path.join("libs", PyPemicro.get_user_friendly_os_name())
                 library_dlls.append(
                     PyPemicro._load_pemicro_lib_info(
                         os.path.join(os.path.dirname(__file__), os_utility_path),
@@ -205,7 +199,7 @@ class PyPemicro:
                 pass
 
         if len(library_dlls) == 0:
-            logger.debug(f"There is no PEMICRO library.")
+            logger.debug("There is no PEMICRO library.")
 
         return library_dlls
 
@@ -222,7 +216,7 @@ class PyPemicro:
 
         try:
             # Open the Pemicro library and
-            dll = cdll.LoadLibrary(file_name)
+            dll = CDLL(file_name)
         except (FileNotFoundError, OSError) as exc:
             raise PEMicroException(
                 f"Cannot load the PEMICRO library({file_name}). " + f"Error({str(exc)})"
@@ -398,7 +392,7 @@ class PyPemicro:
         return dll
 
     @staticmethod
-    def get_lib_filename(lib_record: dict) -> str:
+    def get_lib_filename(lib_record: Dict) -> str:
         """Get the filename from the library dictionary record.
 
         Convert the dictionary record to filename.
@@ -408,7 +402,7 @@ class PyPemicro:
         return os.path.join(lib_record["path"], lib_record["name"])
 
     @staticmethod
-    def get_newest_lib_filename(lib_list: list) -> str:
+    def get_newest_lib_filename(lib_list: List) -> str:
         """Gets the latest version of PEMicro library from list.
 
         :param lib_list: List of PEMicro libraries in system
@@ -454,7 +448,7 @@ class PyPemicro:
         return PyPemicro.open_library(filename)
 
     @staticmethod
-    def list_ports() -> list:
+    def list_ports() -> List:
         """Get list of all connected PEMicro probes.
 
         :return: List of all connected probes to system.
@@ -466,22 +460,23 @@ class PyPemicro:
             raise PEMicroException(str(exc))
 
         num_ports = lib.get_enumerated_number_of_ports(PEMicroPortType.AUTODETECT)
-        ports = list()
+        ports = []
         for i in range(1, num_ports + 1):
             ports.append(
                 {
-                    "id": lib.get_port_descriptor_short(
-                        PEMicroPortType.AUTODETECT, i
-                    ).decode("utf-8"),
-                    "description": lib.get_port_descriptor(
-                        PEMicroPortType.AUTODETECT, i
-                    ).decode("utf-8"),
+                    "id": lib.get_port_descriptor_short(PEMicroPortType.AUTODETECT, i).decode(
+                        "utf-8"
+                    ),
+                    "description": lib.get_port_descriptor(PEMicroPortType.AUTODETECT, i).decode(
+                        "utf-8"
+                    ),
                 }
             )
+        del lib
         return ports
 
     @staticmethod
-    def print_ports(ports: list) -> None:
+    def print_ports(ports: List) -> None:
         """Print the all probes from list that is using list_port() function.
 
         :param ports: Input list of probes to print.
@@ -509,10 +504,10 @@ class PyPemicro:
             logger.info("No hardware detected locally.")
         for i in range(1, num_ports + 1):
             logger.info(
-                lib.get_port_descriptor_short(PEMicroPortType.AUTODETECT, i).decode(
-                    "utf-8"
-                )
+                lib.get_port_descriptor_short(PEMicroPortType.AUTODETECT, i).decode("utf-8")
             )
+
+        del lib
 
     def __init__(
         self,
@@ -531,9 +526,8 @@ class PyPemicro:
         :param log_debug: Log function - debug level.
         """
         # Initialize the basic objects
-        self.__open_ref_count = 0
+        self._opened = False
         self.dll_path = dll_path
-        self.lib = None
         self.lib = PyPemicro.get_pemicro_lib(dll_path)
 
         self.interface = PEMicroInterfaces.SWD
@@ -575,10 +569,7 @@ class PyPemicro:
         if not isinstance(featurenum, PEMicroSpecialFeatures):
             raise PEMicroException("Invalid argument to do special feature")
 
-        if (
-            self.lib.pe_special_features(featurenum, fset, par1, par2, par3, ref1, ref2)
-            is False
-        ):
+        if self.lib.pe_special_features(featurenum, fset, par1, par2, par3, ref1, ref2) is False:
             raise PEMicroException("The special feature command hasn't accepted")
 
     def set_application_files_directory(self, dir: str) -> None:
@@ -625,13 +616,10 @@ class PyPemicro:
         :raises PEMicroException: With any problem with probe itself
         """
         if self.lib is None:
-            self.lib = PyPemicro.get_pemicro_lib(dll_path=self.dll_path)
-
-        if self.lib is None:
             raise PEMicroException("The PEMicro library loader failed.")
 
-        if self.__open_ref_count > 0:
-            self.__open_ref_count += 1
+        if self._opened:
+            logger.warning("The PEMicro probe is already opened")
             return
 
         if debug_hardware_name_ip_or_serialnum is None:
@@ -645,7 +633,7 @@ class PyPemicro:
         if not self.lib.open_port_by_identifier(port_name):
             raise PEMicroException("Cannot connect to debug probe")
 
-        self.__open_ref_count = 1
+        self._opened = True
 
         # Connect and initialize the P&E hardware interface. This does not attempt to reset the target.
         self.lib.reset_hardware_interface()
@@ -661,25 +649,24 @@ class PyPemicro:
     @property
     def opened(self) -> bool:
         """Returns if the library is opened or not."""
-        return True if self.__open_ref_count > 0 else False
+        return self._opened
 
     def close(self) -> None:
         """Close the connection and also it close the opened DLL library."""
-        if self.__open_ref_count == 0:
+        if not self._opened:
             # Do nothing if .open() has not been called.
             return
 
-        self.__open_ref_count -= 1
+        # Close any open connections to hardware
+        self._special_features(PEMicroSpecialFeatures.PE_ARM_FLUSH_ANY_QUEUED_DATA)
 
-        if self.__open_ref_count == 0:
-            # Close any open connections to hardware
-            self._special_features(PEMicroSpecialFeatures.PE_ARM_FLUSH_ANY_QUEUED_DATA)
+        if self.opened_debug_file:
+            self.close_debug_file()
 
-            if self.opened_debug_file:
-                self.close_debug_file()
+        if self.lib is not None:
+            self.lib.close_port()
 
-            if self.lib is not None:
-                self.lib.close_port()
+        self._opened = False
 
     def __del__(self) -> None:
         """Action for deleting the class instance."""
@@ -688,6 +675,7 @@ class PyPemicro:
         # Unload the library if necessary
         if self.lib is not None:
             del self.lib
+            self.lib = None
 
     def open_debug_file(self, filename: str = "log_pemicro_comm.txt") -> None:
         """Log the debug communication into file.
@@ -831,9 +819,7 @@ class PyPemicro:
             raise PEMicroException("Invalid register index")
 
         if self.lib.set_mcu_register(0, reg, value) is False:
-            raise PEMicroException(
-                f"Setting of new MCU register{str(reg)} value{value:X08} fails"
-            )
+            raise PEMicroException(f"Setting of new MCU register{str(reg)} value{value:X08} fails")
 
     def set_reset_delay_in_ms(self, delay: int) -> None:
         """Set the Reset delay.
@@ -851,7 +837,7 @@ class PyPemicro:
 
         :raises PEMicroException: Check to active connection.
         """
-        if self.__open_ref_count == 0:
+        if not self._opened:
             raise PEMicroException("The connection is not active")
 
         self._log_debug(f"All queued data has been flushed")
@@ -863,10 +849,8 @@ class PyPemicro:
         :param device_name:
         :raises PEMicroException: Check to opened connection.
         """
-        if self.__open_ref_count > 0:
-            raise PEMicroException(
-                "The connection is already opened, can't change the device name"
-            )
+        if self._opened:
+            raise PEMicroException("The connection is already opened, can't change the device name")
 
         self._log_debug(f"The device name is set to {device_name}")
 
@@ -875,7 +859,7 @@ class PyPemicro:
             ref1=device_name.encode("utf-8"),
         )
 
-    def get_device_list(self, search_string: str = None) -> list:
+    def get_device_list(self, search_string: str = None) -> List:
         """Get the device list.
 
         :param search_string: The participial string to filter results.
@@ -895,9 +879,7 @@ class PyPemicro:
                 ref2=None if search_string is None else search_string.encode("utf-8"),
             )
         except PEMicroException as exc:
-            raise PEMicroException(
-                f"It is impossible to retrive PEMicro device list:{str(exc)}."
-            )
+            raise PEMicroException(f"It is impossible to retrive PEMicro device list:{str(exc)}.")
 
         return ret_val.value.decode().split(",")
 
@@ -931,10 +913,8 @@ class PyPemicro:
         # connectToDebugCable must be used first to connect to the debug hardware
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
-        if self.__open_ref_count == 0:
-            raise PEMicroException(
-                "The connection is not opened, can't connect to target"
-            )
+        if not self._opened:
+            raise PEMicroException("The connection is not opened, can't connect to target")
         self._log_debug(f"Selecting the communication interface to {str(interface)}")
         self.interface = interface
         if self.interface is PEMicroInterfaces.SWD:
@@ -967,7 +947,7 @@ class PyPemicro:
         """
         if self.lib is None:
             raise PEMicroException("Library is not loaded")
-        if self.__open_ref_count == 0:
+        if not self._opened:
             raise PEMicroException("The communication interface is not opened")
         self._log_debug(f"The communication speed has been switched to {freq}Hz")
 
@@ -1002,9 +982,7 @@ class PyPemicro:
         value = self.lib.read_32bit_value(0, address, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
-            raise PEMicroException(
-                f"Read 32bit method failed. Result({mem_result.value})"
-            )
+            raise PEMicroException(f"Read 32bit method failed. Result({mem_result.value})")
 
         return value
 
@@ -1023,9 +1001,7 @@ class PyPemicro:
         value = self.lib.write_32bit_value(0, address, data, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
-            raise PEMicroException(
-                f"Write 32bit method failed. Result({mem_result.value})"
-            )
+            raise PEMicroException(f"Write 32bit method failed. Result({mem_result.value})")
 
     def read_16bit(self, address: int) -> int:
         """Reads 16 bits of data.
@@ -1042,9 +1018,7 @@ class PyPemicro:
         value = self.lib.read_16bit_value(0, address, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
-            raise PEMicroException(
-                f"Read 16bit method failed. Result({mem_result.value})"
-            )
+            raise PEMicroException(f"Read 16bit method failed. Result({mem_result.value})")
 
         return value
 
@@ -1063,9 +1037,7 @@ class PyPemicro:
         value = self.lib.write_16bit_value(0, address, data, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
-            raise PEMicroException(
-                f"Write 16bit method failed. Result({mem_result.value})"
-            )
+            raise PEMicroException(f"Write 16bit method failed. Result({mem_result.value})")
 
     def read_8bit(self, address: int) -> int:
         """Reads 8 bits of data.
@@ -1082,9 +1054,7 @@ class PyPemicro:
         value = self.lib.read_8bit_value(0, address, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
-            raise PEMicroException(
-                f"Read 8bit method failed. Result({mem_result.value})"
-            )
+            raise PEMicroException(f"Read 8bit method failed. Result({mem_result.value})")
 
         return value
 
@@ -1103,9 +1073,7 @@ class PyPemicro:
         value = self.lib.write_8bit_value(0, address, data, byref(mem_result))
 
         if mem_result.value != PEMicroMemoryAccessResults.PE_MAR_MEM_OK:
-            raise PEMicroException(
-                f"Write 8bit method failed. Result({mem_result.value})"
-            )
+            raise PEMicroException(f"Write 8bit method failed. Result({mem_result.value})")
 
     def read_block(
         self,
@@ -1139,10 +1107,7 @@ class PyPemicro:
 
         operation_check = c_byte(size)
 
-        if (
-            self.lib.get_block(0, address, size, access_bit_size, data, operation_check)
-            is False
-        ):
+        if not self.lib.get_block(0, address, size, access_bit_size, data, operation_check):
             raise PEMicroException(f"Read block method failed.")
 
         for data_byte_check in operation_check:
@@ -1181,10 +1146,7 @@ class PyPemicro:
 
         operation_check = c_byte(size)
 
-        if (
-            self.lib.put_block(0, address, size, access_bit_size, data, operation_check)
-            is False
-        ):
+        if not self.lib.put_block(0, address, size, access_bit_size, data, operation_check):
             raise PEMicroException(f"Write block method failed.")
 
         for data_byte_check in operation_check:
@@ -1238,9 +1200,7 @@ class PyPemicro:
         swd_status = self.last_swd_status()
 
         if swd_status is not int(PEMicroSpecialFeaturesSwdStatus.PE_ARM_SWD_STATUS_ACK):
-            if swd_status is not int(
-                PEMicroSpecialFeaturesSwdStatus.PE_ARM_SWD_STATUS_WAIT
-            ):
+            if swd_status is not int(PEMicroSpecialFeaturesSwdStatus.PE_ARM_SWD_STATUS_WAIT):
                 # Verify that the connection to the P&E hardware interface is good.
                 probe_error = self.lib.check_critical_error()
 
@@ -1265,9 +1225,7 @@ class PyPemicro:
                 f"SWD Status failed during IO operation. status: 0x{swd_status:02X}"
             )
 
-    def write_ap_register(
-        self, apselect: int, addr: int, value: int, now: bool = False
-    ) -> None:
+    def write_ap_register(self, apselect: int, addr: int, value: int, now: bool = False) -> None:
         """Write Access port register.
 
         Function writes the access port coresight register.
@@ -1277,7 +1235,7 @@ class PyPemicro:
         :param now: Delayed or immediate write
         :raises PEMicroException: Writing error
         """
-        if self.__open_ref_count == 0:
+        if not self._opened:
             raise PEMicroException("There is NO opened connection with target")
 
         self._log_debug(
@@ -1309,8 +1267,8 @@ class PyPemicro:
         :return: Value of read register
         :raises PEMicroException: Reading error
         """
-        if self.__open_ref_count == 0:
-            raise PEMicroException("There is NO opened connection with target")
+        if not self._opened:
+            raise PEMicroException("There is no opened connection with target")
         ret_val = c_ulong()
         self._special_features(
             PEMicroSpecialFeatures.PE_ARM_READ_AP_REGISTER,
@@ -1337,8 +1295,8 @@ class PyPemicro:
         :param value: Value of register to write
         :raises PEMicroException: Writing error
         """
-        if self.__open_ref_count == 0:
-            raise PEMicroException("There is NO opened connection with target")
+        if not self._opened:
+            raise PEMicroException("There is no opened connection with target")
 
         self._log_debug(
             f"Writing into DP register: Addr: 0x{addr:08X}, Value:{value}, 0x{value:08X}, now?:{now}"
@@ -1354,9 +1312,7 @@ class PyPemicro:
         # Check the status of SWD
         self.__check_swd_error()
 
-    def read_dp_register(
-        self, addr: int, now: bool = True, requires_delay: bool = False
-    ) -> int:
+    def read_dp_register(self, addr: int, now: bool = True, requires_delay: bool = False) -> int:
         """Read Debug port register.
 
         Function reads the debug port coresight register.
@@ -1366,8 +1322,8 @@ class PyPemicro:
         :return: Value of read register
         :raises PEMicroException: Reading error
         """
-        if self.__open_ref_count == 0:
-            raise PEMicroException("There is NO opened connection with target")
+        if not self._opened:
+            raise PEMicroException("There is no opened connection with target")
         ret_val = c_ulong()
         self._special_features(
             PEMicroSpecialFeatures.PE_ARM_READ_DP_REGISTER,
@@ -1395,7 +1351,5 @@ class PyPemicro:
         self._special_features(
             PEMicroSpecialFeatures.PE_ARM_GET_LAST_SWD_STATUS, ref1=byref(ret_val)
         )
-        self._log_debug(
-            "Got last SWD status:{val}, 0x{val:08X}".format(val=ret_val.value)
-        )
+        self._log_debug("Got last SWD status:{val}, 0x{val:08X}".format(val=ret_val.value))
         return ret_val.value

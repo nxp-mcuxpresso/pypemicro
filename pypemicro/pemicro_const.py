@@ -4,7 +4,7 @@
 # All rights reserved.
 # Visit us at www.pemicro.com
 #
-# Copyright 2020 NXP
+# Copyright 2020-2023 NXP
 #
 # SPDX-License-Identifier:
 # BSD-3-Clause
@@ -42,12 +42,13 @@ The basics of the code is comming from original PEMicro version.
 """
 from enum import IntEnum
 
-#Types are provided via *.PYI interface files
-#pylint: disable=missing-type-doc,missing-return-type-doc
+# Types are provided via *.PYI interface files
+# pylint: disable=missing-type-doc,missing-return-type-doc
 
 # Enumeration of all PEMicro port types
 class PEMicroPortType(IntEnum):
     """List of all supported PEMicro port types."""
+
     AUTODETECT = 99
     PARALLEL_PORT_CABLE = 1
     PCIBDM_LIGHTNING = 2
@@ -57,66 +58,75 @@ class PEMicroPortType(IntEnum):
     CYCLONE_PRO_MAX_ETHERNET = 6
     OPENSDA_USB = 9
 
+
 # Enumeration of all PEMicro Special features
 class PEMicroSpecialFeatures(IntEnum):
     """Enumeration of all PEMicro Special features."""
+
     # Special Features for Power Management
-    PE_PWR_SET_POWER_OPTIONS = 0X38000001
-    PE_PWR_TURN_POWER_ON = 0X38000011
-    PE_PWR_TURN_POWER_OFF = 0X38000012
+    PE_PWR_SET_POWER_OPTIONS = 0x38000001
+    PE_PWR_TURN_POWER_ON = 0x38000011
+    PE_PWR_TURN_POWER_OFF = 0x38000012
 
     # Special Features for debug communications mode
-    PE_ARM_SET_COMMUNICATIONS_MODE = 0X44000001
-    PE_ARM_SET_DEBUG_COMM_SWD = 0X00000000
-    PE_ARM_SET_DEBUG_COMM_JTAG = 0X00000001
+    PE_ARM_SET_COMMUNICATIONS_MODE = 0x44000001
+    PE_ARM_SET_DEBUG_COMM_SWD = 0x00000000
+    PE_ARM_SET_DEBUG_COMM_JTAG = 0x00000001
 
-    PE_ARM_ENABLE_DEBUG_MODULE = 0X44000002
-    PE_ARM_WRITE_AP_REGISTER = 0X44000003
-    PE_ARM_READ_AP_REGISTER = 0X44000004
-    PE_ARM_WRITE_DP_REGISTER = 0X44000007
-    PE_ARM_READ_DP_REGISTER = 0X44000008
-    PE_ARM_FLUSH_ANY_QUEUED_DATA = 0X44000005
+    PE_ARM_ENABLE_DEBUG_MODULE = 0x44000002
+    PE_ARM_WRITE_AP_REGISTER = 0x44000003
+    PE_ARM_READ_AP_REGISTER = 0x44000004
+    PE_ARM_WRITE_DP_REGISTER = 0x44000007
+    PE_ARM_READ_DP_REGISTER = 0x44000008
+    PE_ARM_FLUSH_ANY_QUEUED_DATA = 0x44000005
 
     # SWD control special features
-    PE_ARM_GET_LAST_SWD_STATUS = 0X44000006
+    PE_ARM_GET_LAST_SWD_STATUS = 0x44000006
 
     # Special Features for Setting current device and core
-    PE_GENERIC_GET_DEVICE_LIST = 0X58004000
-    PE_GENERIC_SELECT_DEVICE = 0X58004001
-    PE_GENERIC_GET_CORE_LIST = 0X58004002
-    PE_GENERIC_SELECT_CORE = 0X58004003
-    PE_SET_DEFAULT_APPLICATION_FILES_DIRECTORY = 0X58006000
+    PE_GENERIC_GET_DEVICE_LIST = 0x58004000
+    PE_GENERIC_SELECT_DEVICE = 0x58004001
+    PE_GENERIC_GET_CORE_LIST = 0x58004002
+    PE_GENERIC_SELECT_CORE = 0x58004003
+    PE_SET_DEFAULT_APPLICATION_FILES_DIRECTORY = 0x58006000
+
 
 class PEMicroSpecialFeaturesSwdStatus(IntEnum):
     """Enumeration of all possible SWD status values."""
-    PE_ARM_SWD_STATUS_ACK = 0X04
-    PE_ARM_SWD_STATUS_WAIT = 0X02
-    PE_ARM_SWD_STATUS_FAULT = 0X01
+
+    PE_ARM_SWD_STATUS_ACK = 0x04
+    PE_ARM_SWD_STATUS_WAIT = 0x02
+    PE_ARM_SWD_STATUS_FAULT = 0x01
+
 
 class PEMicroMemoryAccessResults(IntEnum):
     """Enumeration of all PEMicro Special features."""
-    #No error occurred.
+
+    # No error occurred.
     PE_MAR_MEM_OK = 0
-    #Access to memory was denied. (MCU is running).
+    # Access to memory was denied. (MCU is running).
     PE_MAR_MEM_NO_ACCESS = 1
-    #A Bus error was detected.
+    # A Bus error was detected.
     PE_MAR_MEM_BUS_ERROR = 2
-    #Non-existent memory was accessed.
+    # Non-existent memory was accessed.
     PE_MAR_MEM_UNIMPLEMENTED = 3
-    #Valid but indeterminate memory was accessed.
+    # Valid but indeterminate memory was accessed.
     PE_MAR_MEM_UNINITIALIZED = 4
-    #Error occurred during programming sequence.
+    # Error occurred during programming sequence.
     PE_MAR_MEM_PROGRAMMING_ERROR = 5
 
 
 class PEMicroMemoryAccessSize(IntEnum):
     """Memory access size used for block memory operations."""
+
     PE_MEM_ACCESS_8BIT = 1
     PE_MEM_ACCESS_16BIT = 2
     PE_MEM_ACCESS_32BIT = 4
 
+
 class PEMicroArmRegisters(IntEnum):
     """List of Arm registers used for Writing/Reading operations."""
+
     # Core registers
     PE_ARM_REG_R0 = 0
     PE_ARM_REG_R1 = 1
@@ -140,8 +150,8 @@ class PEMicroArmRegisters(IntEnum):
 
     # Program status registers + Stack pointers
     PE_ARM_REG_XPSR = 16
-    PE_ARM_REG_MSP = 17      # Main SP
-    PE_ARM_REG_PSP = 18      # Process SP
+    PE_ARM_REG_MSP = 17  # Main SP
+    PE_ARM_REG_PSP = 18  # Process SP
 
     # Special registers
     # CONTROL bits [31:24]
@@ -190,8 +200,10 @@ class PEMicroArmRegisters(IntEnum):
     # MDM-AP Status Register
     PE_ARM_REG_MDM_AP = 1000
 
+
 class PEMicroInterfaces(IntEnum):
     """Target interfaces for the PEMicro."""
+
     JTAG = 0
     SWD = 1
 
