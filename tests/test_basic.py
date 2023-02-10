@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 #
-# Copyright 2022 NXP
+# Copyright 2022-2023 NXP
 # All rights reserved.
 # Visit us at www.nxp.com
 #
-# SPDX-License-Identifier:
-# BSD-3-Clause
+# SPDX-License-Identifier: BSD-3-Clause
 
 """ Simple tests for PEMicro Python implementation by NXP.
 """

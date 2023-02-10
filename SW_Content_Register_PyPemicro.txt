@@ -1,0 +1,17 @@
+NXP Software Content Register
+
+Package:                   PyPemicro
+Version:                   0.1.10
+Outgoing License:          BSD-3-Clause
+License Files:             LICENSE
+Type of content:           Source code
+Description and comments:  Pemicro probes control python package
+Origin:                    NXP
+
+PEMICRO dynamic libraries   Name: UNITACMP
+                            Version: 9.02.00.00
+                            License: Proprietary - PEMICRO_LIBS_LICENSE
+                            Location: pypemicro/libs
+                            Type: Dynamic libraries
+                            URL: https://www.pemicro.com
+                            Note: NXP has written agreement to redistribute libraries with PyPemicro
