@@ -386,6 +386,20 @@ class PyPemicro:
         dll.set_mcu_register.argtypes = [c_ulong, c_ulong, c_ulong]
         dll.set_mcu_register.restype = c_bool
 
+        if (
+            dll.pe_special_features(
+                PEMicroSpecialFeatures.PE_SET_DEFAULT_APPLICATION_FILES_DIRECTORY,
+                True,
+                0,
+                0,
+                0,
+                c_char_p(os.path.dirname(os.path.abspath(file_name).encode("utf-8"))),
+                None,
+            )
+            is False
+        ):
+            raise PEMicroException("The special feature command hasn't been accepted")
+
         logger.debug(f"Opened PEMicro library: {file_name}, {dll.version()}.")
 
         return dll
