@@ -541,6 +541,7 @@ class PyPemicro:
         # Initialize the basic objects
         self._opened = False
         self.dll_path = dll_path
+        self.lib = None
         self.lib = PyPemicro.get_pemicro_lib(dll_path)
 
         self.interface = PEMicroInterfaces.SWD
