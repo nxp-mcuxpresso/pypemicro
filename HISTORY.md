@@ -1,6 +1,11 @@
 History of PyPEMicro package versions
 =====================================
 
+v 0.1.11
+-------
+ - February 2023
+ - Reverted back some changes in 0.1.11 that makes PyPemicro none working on MacOS
+
 v 0.1.10
 -------
  - February 2023
