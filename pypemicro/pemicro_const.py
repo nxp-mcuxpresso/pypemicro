@@ -37,12 +37,12 @@
 # PEMicro company has been notified and they are agree.
 """PEMicro Python implementation by NXP.
 
-The basics of the code is comming from original PEMicro version.
+The basics of the code is coming from original PEMicro version.
 """
 from enum import IntEnum
 
 # Types are provided via *.PYI interface files
-# pylint: disable=missing-type-doc,missing-return-type-doc
+
 
 # Enumeration of all PEMicro port types
 class PEMicroPortType(IntEnum):
@@ -215,5 +215,4 @@ class PEMicroInterfaces(IntEnum):
         """
         if not isinstance(interface, cls):
             return "Not selected"
-        else:
-            return "SWD" if interface is cls.SWD else "JTAG"
+        return "SWD" if interface is cls.SWD else "JTAG"

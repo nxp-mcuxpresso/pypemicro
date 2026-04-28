@@ -37,8 +37,35 @@
 # PEMicro company has been notified and they are agree.
 """PEMicro Python implementation by NXP.
 
-The basics of the code is comming from original PEMicro version.
+The basics of the code is coming from original PEMicro version.
 """
 
-from pypemicro.pemicro_const import *
-from pypemicro.pemicro import *
+from pypemicro.pemicro import PEMicroTransferException, PyPemicro
+from pypemicro.pemicro_base import PEMicroException, PyPemicroBase
+from pypemicro.pemicro_const import (
+    PEMicroArmRegisters,
+    PEMicroInterfaces,
+    PEMicroMemoryAccessResults,
+    PEMicroMemoryAccessSize,
+    PEMicroPortType,
+    PEMicroSpecialFeatures,
+    PEMicroSpecialFeaturesSwdStatus,
+)
+from pypemicro.pemicro_const_dsc import PEMicroDscSpecialFeatures
+from pypemicro.pemicro_dsc import PyPemicroDsc
+
+__all__ = [
+    "PEMicroException",
+    "PEMicroTransferException",
+    "PyPemicroBase",
+    "PyPemicro",
+    "PyPemicroDsc",
+    "PEMicroArmRegisters",
+    "PEMicroInterfaces",
+    "PEMicroMemoryAccessResults",
+    "PEMicroMemoryAccessSize",
+    "PEMicroPortType",
+    "PEMicroSpecialFeatures",
+    "PEMicroSpecialFeaturesSwdStatus",
+    "PEMicroDscSpecialFeatures",
+]
