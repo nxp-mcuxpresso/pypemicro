@@ -1,0 +1,20 @@
+# Copyright 2026 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
+---
+$schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
+version: "0.2"
+dictionaryDefinitions:
+    - name: project-words
+      path: cspell-words.txt
+      addWords: true
+dictionaries:
+    - project-words
+ignorePaths:
+    - "venv**"
+    - "__pycache__**"
+    - "_build**"
+    - "reports/**"
+    - "build/**"
+    - "dist/**"
+    - "*.egg-info/**"

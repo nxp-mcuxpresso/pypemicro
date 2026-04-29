@@ -8,8 +8,8 @@ with open("HISTORY.md") as history_file:
 
 setup_args = dict(
     name="pypemicro",
-    version="0.1.11",
-    description="Python tool to control PEMicro Debug probes",
+    version="0.2.0",
+    description="Python tool to control PEMicro Debug probes (ARM and DSC)",
     long_description_content_type="text/markdown",
     long_description=README + "\n\n" + HISTORY,
     platforms="Windows, Linux, Mac OSX",

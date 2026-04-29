@@ -8,3 +8,56 @@ force-exclude = '''
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+junit_family = "xunit1"
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover"]
+
+[tool.coverage.run]
+relative_files = true
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 100
+
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+
+[tool.pydocstyle]
+convention = "google"
+add_ignore = "D105,D301"
+match = '(?!test_|__version__).*\.py'
+
+[tool.pylint]
+format = { max-line-length = 120 }
+"messages control" = { disable = ["logging-fstring-interpolation", "duplicate-code"] }
+
+[tool.ruff]
+
+[tool.nxp_codecheck]
+git_parent_branch = "origin/master"
+output_directory = "reports"
+default_check_paths = ["pypemicro"]
+checkers = [
+    { "pytest" = { kwargs = { disable_xdist = true } } },
+    { "gitcov" = { info_only = true } },
+    "pylint",
+    "mypy",
+    "pydocstyle",
+    "ruff",
+    { "radon_c" = { info_only = true } },
+    "radon_d",
+    "black",
+    "isort",
+    { "cspell" = { info_only = true } },
+    { "bandit" = { info_only = false, kwargs = { "severity-level" = "medium" } } },
+]
